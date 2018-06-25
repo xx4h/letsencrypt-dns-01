@@ -27,4 +27,4 @@ if [ "$DOMAIN" = "" ]; then
 fi
 
 
-certbot certonly --manual --preferred-challenges=dns --manual-auth-hook plugins/$PLUGIN/auth --manual-cleanup-hook plugins/$PLUGIN/cleanup -d $DOMAIN
+certbot certonly -n --manual-public-ip-logging-ok --manual --preferred-challenges=dns --manual-auth-hook plugins/$PLUGIN/auth --manual-cleanup-hook plugins/$PLUGIN/cleanup -d $DOMAIN
