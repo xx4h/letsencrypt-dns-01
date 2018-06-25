@@ -55,7 +55,6 @@ try {
             // $dns_entry[0]['data'] = $certbot_validation;
             // $dns_entry = $client->dns_txt_update($session_id, 0, $dns_entry[0]['id'], $dns_entry[0]);
         } else {
-            error_log("Entry _acme-challenge.$certbot_domain does not exist. Creating new one is not supported right now.");
             $dns_entry = Array(
                 //"id" => 84,
                 //"sys_userid" => 1,
