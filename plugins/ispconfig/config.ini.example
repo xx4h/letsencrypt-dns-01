@@ -4,3 +4,4 @@ password = your_remote_user_passwort
 soap_location = https://your_ispconfig_address:8080/remote/index.php
 soap_uri = https://your_ispconfig_address:8080/remote/
 
+debug = 1
