@@ -1,13 +1,12 @@
 <?php
-// Load config
-$ini_array = parse_ini_file("config.ini");
-
-$debug = $ini_array['debug'];
-
 // Add helpers
 function msg($msg) {
+    $ini_array = parse_ini_file("config.ini");
+    $debug = $ini_array['debug'];
     if ($debug) { error_log($msg); }
 }
+// Load config
+$ini_array = parse_ini_file("config.ini");
 
 $username = $ini_array['username'];
 $password = $ini_array['password'];
