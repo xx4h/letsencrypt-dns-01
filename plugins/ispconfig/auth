@@ -55,7 +55,7 @@ try {
             $updated_zone = $client->dns_zone_update($session_id, 0, $zone[0]['id'], $zone[0]);
 
             // wait until ispconfig does have updated it's configuration
-            sleep(60);
+            sleep($wait_seconds);
 	}
 
         //* Logout

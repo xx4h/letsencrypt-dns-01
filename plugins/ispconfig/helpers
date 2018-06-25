@@ -14,6 +14,8 @@ $password = $ini_array['password'];
 $soap_location = $ini_array['soap_location'];
 $soap_uri = $ini_array['soap_uri'];
 
+$wait_seconds = $ini_array['wait_seconds'];
+
 // Usable environment variables:
 // CERTBOT_DOMAIN
 // CERTBOT_VALIDATION

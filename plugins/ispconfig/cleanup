@@ -35,8 +35,6 @@ try {
         $zone[0]['serial'] = $zone[0]['serial'] + 1;
         $updated_zone = $client->dns_zone_update($session_id, 0, $zone[0]['id'], $zone[0]);
 
-        sleep(60);
-
         //* Logout
         if($client->logout($session_id)) {
                 msg("Logout done");
