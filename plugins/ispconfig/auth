@@ -1,59 +1,33 @@
 #!/usr/bin/php
 <?php
-// Load config
-$ini_array = parse_ini_file("config.ini");
 
-$username = $ini_array['username'];
-$password = $ini_array['password'];
-
-$soap_location = $ini_array['soap_location'];
-$soap_uri = $ini_array['soap_uri'];
-
-// Usable environment variables:
-// CERTBOT_DOMAIN
-// CERTBOT_VALIDATION
-// CERTBOT_TOKEN
-$certbot_domain = getenv('CERTBOT_DOMAIN');
-$certbot_validation = getenv('CERTBOT_VALIDATION');
-$certbot_token = getenv('CERTBOT_TOKEN');
-
-$domain_only = "";
-$needs_zone_update = false;
-
-$client = new SoapClient(null, array(
-	'location' => $soap_location,
-	'uri'      => $soap_uri,
-	'cache_wsdl' => WSDL_CACHE_NONE,
-));
+require "helpers";
 
 try {
     //* Login to the remote server
     if($session_id = $client->login($username, $password)) {
-        error_log('Logged into remote server sucessfully. The SessionID is '.$session_id);
+        msg('Logged into remote server sucessfully. The SessionID is '.$session_id);
         $domain_array = explode('.', $certbot_domain);
         $domain_reverted_array = new ArrayIterator(array_reverse($domain_array));
         foreach ($domain_reverted_array as $domain_part) {
             $domain_only = $domain_part . "." . $domain_only;
-            error_log("Trying to find domain with origin: ".$domain_only);
+            msg("Trying to find domain with origin: ".$domain_only);
             $zone = $client->dns_zone_get($session_id, array('origin' => $domain_only));
             $errors = array_filter($zone);
 
-            if (!empty($zone)) { break; } else { error_log($domain_only." existiert nicht. Weiter."); }
+            if (!empty($zone)) { break; } else { msg($domain_only." existiert nicht. Weiter."); }
         }
         if (!empty($zone)) {
-            error_log("Zone ist: ".$zone[0]['origin']);
+            msg("Zone ist: ".$zone[0]['origin']);
         } else {
-            error_log("Keine passende Zone gefunden! Breche Ab.");
+            msg("Keine passende Zone gefunden! Breche Ab.");
             exit(1);
         }
-        error_log("Trying to find :".implode('.', $domain_array));
+        msg("Trying to find :".implode('.', $domain_array));
         $dns_entry = $client->dns_txt_get($session_id, array('name' => "_acme-challenge.".$certbot_domain."."));
         if ($dns_entry[0]) {
-            error_log("Entry already existing: ".print_r($dns_entry, true).", This does not work correctly, please remove it.");
+            msg("Entry already existing: ".print_r($dns_entry, true).", This does not work correctly, please remove it.");
             exit(1);
-            // error_log("Entry already existing: ".print_r($dns_entry, true).", adding validation: ".$certbot_validation);
-            // $dns_entry[0]['data'] = $certbot_validation;
-            // $dns_entry = $client->dns_txt_update($session_id, 0, $dns_entry[0]['id'], $dns_entry[0]);
         } else {
             $dns_entry = Array(
                 //"id" => 84,
@@ -70,7 +44,7 @@ try {
                 "ttl" => 60,
                 "active" => "Y"
             );
-            error_log("Adding following $certbot_validation to Entry: ".print_r($dns_entry, true));
+            msg("Adding following $certbot_validation to Entry: ".print_r($dns_entry, true));
 	    $client->dns_txt_add($session_id, 0, $dns_entry);
 	    $needs_zone_update = true;
 	}
@@ -86,11 +60,11 @@ try {
 
         //* Logout
         if($client->logout($session_id)) {
-                error_log("Logout done");
+                msg("Logout done");
         }
     }
 } catch (SoapFault $e) {
-        error_log('SOAP Error: '.$e->getMessage());
+        msg('SOAP Error: '.$e->getMessage());
         die("Please contact the server administator\n");
 }
 
