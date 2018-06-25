@@ -1,0 +1,75 @@
+#!/usr/bin/php
+<?php
+// Load config
+$ini_array = parse_ini_file("config.ini");
+
+$username = $ini_array['username'];
+$password = $ini_array['password'];
+
+$soap_location = $ini_array['soap_location'];
+$soap_uri = $ini_array['soap_uri'];
+
+// Usable environment variables:
+// CERTBOT_DOMAIN
+// CERTBOT_VALIDATION
+// CERTBOT_TOKEN
+$certbot_domain = getenv('CERTBOT_DOMAIN');
+$certbot_validation = getenv('CERTBOT_VALIDATION');
+$certbot_token = getenv('CERTBOT_TOKEN');
+
+$domain_only = "";
+$needs_zone_update = false;
+
+$client = new SoapClient(null, array(
+	'location' => $soap_location,
+	'uri'      => $soap_uri,
+	'cache_wsdl' => WSDL_CACHE_NONE,
+));
+
+try {
+    //* Login to the remote server
+    if($session_id = $client->login($username, $password)) {
+        error_log('Logged into remote server sucessfully. The SessionID is '.$session_id);
+        $domain_array = explode('.', $certbot_domain);
+        $domain_reverted_array = new ArrayIterator(array_reverse($domain_array));
+        foreach ($domain_reverted_array as $domain_part) {
+            $domain_only = $domain_part . "." . $domain_only;
+            error_log("Trying to find domain with origin: ".$domain_only);
+            $zone = $client->dns_zone_get($session_id, array('origin' => $domain_only));
+            $errors = array_filter($zone);
+
+            if (!empty($zone)) { break; } else { error_log($domain_only." Does not exist. Continuing..."); }
+	}
+
+        if (empty($zone)) {
+            exit(1);
+	}
+
+        error_log("Trying to find :".implode('.', $domain_array));
+        $dns_entry = $client->dns_txt_get($session_id, array('name' => "_acme-challenge.".$certbot_domain."."));
+        if ($dns_entry[0]) {
+            error_log("Entry does exist, lets delete it.");
+            $dns_entry = $client->dns_txt_delete($session_id, $dns_entry[0]['id']);
+        } else {
+            error_log("Entry _acme-challenge.$certbot_domain does not exist. Nothing to delete.");
+            exit(0);
+        }
+        $zone = $client->dns_zone_get($session_id, array('origin' => $zone[0]['origin']));
+        $zone[0]['serial'] = $zone[0]['serial'] + 1;
+        $updated_zone = $client->dns_zone_update($session_id, 0, $zone[0]['id'], $zone[0]);
+
+        sleep(60);
+
+        //* Logout
+        if($client->logout($session_id)) {
+                error_log("Logout done");
+        }
+
+    }
+} catch (SoapFault $e) {
+        error_log('SOAP Error: '.$e->getMessage());
+        die("Please contact the server administator\n");
+}
+
+
+?>
