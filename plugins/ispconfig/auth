@@ -25,7 +25,7 @@ try {
         }
         msg("Trying to find :".implode('.', $domain_array));
         $dns_entry = $client->dns_txt_get($session_id, array('name' => "_acme-challenge.".$certbot_domain."."));
-        if ($dns_entry[0]) {
+        if ($dns_entry && $dns_entry[0]) {
             msg("Entry already existing: ".print_r($dns_entry, true).", This does not work correctly, please remove it.");
             exit(1);
         } else {
