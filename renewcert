@@ -3,10 +3,12 @@
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 PLUGIN="$(basename ${0/-renew})"
 DOMAIN="$1"
+SERVICES="$2"
 
 PLUGIN_PATH="$SCRIPTPATH/plugins/$PLUGIN"
 PLUGIN_AUTH_PATH="$SCRIPTPATH/plugins/$PLUGIN/auth"
 PLUGIN_CLEANUP_PATH="$SCRIPTPATH/plugins/$PLUGIN/cleanup"
+PLUGIN_DEPLOY_PATH="$SCRIPTPATH/plugins/$PLUGIN/deploy"
 
 if [ "$PLUGIN" = "renewcert" ]; then
     echo "You cannot use 'renewcert' directly, use one of the supported plugins"
@@ -27,9 +29,13 @@ if [ ! -f "$PLUGIN_CLEANUP_PATH" ]; then
 fi
 
 if [ "$DOMAIN" = "" ]; then
-    echo "Usage: $PLUGIN DOMAIN"
+    echo "Usage: $PLUGIN DOMAIN [SERVICE1[,SERVICE2]]"
     exit 0
 fi
 
+if [ "$SERVICES" != "" ]; then
+	export DEPLOY_SERVICES="$SERVICES"
+fi
 
-certbot renew -n --cert-name $DOMAIN --manual --preferred-challenges=dns --manual-auth-hook $PLUGIN_AUTH_PATH --manual-cleanup-hook $PLUGIN_CLEANUP_PATH
+
+certbot renew -n --cert-name $DOMAIN --manual --preferred-challenges=dns --manual-auth-hook $PLUGIN_AUTH_PATH --manual-cleanup-hook $PLUGIN_CLEANUP_PATH --deploy-hook $PLUGIN_DEPLOY_PATH
