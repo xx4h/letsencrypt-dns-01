@@ -38,4 +38,12 @@ Usage
 
 # To renew a certificate the corresponding plugin should have matching -renew command (e.g. for ispconfig plugin
 /usr/local/letsencrypt-dns-01/ispconfig-renew www.example.org
+
+# If a plugin has a deploy hook (plugins/PLUGINNAME/deploy), we can reload services if certificates were renewed
+/usr/local/letsencrypt-dns-01/ispconfig-renew www.example.org apache2
+
+# To reload multiple services (as we use the certificates in apache and postfix for example), we use a comma separated list
+/usr/local/letsencrypt-dns-01/ispconfig-renew www.example.org apache2,postfix
 ```
+
+Deploy script is only used in PLUGIN-renew, not in the initial getcert.
