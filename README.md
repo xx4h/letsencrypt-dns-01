@@ -7,3 +7,33 @@ Supported methods
 -----------------
 
 * ISPConfig remote API
+
+Installation
+------------
+
+```
+# Decide where to place your letsencrypt-dns-01
+cd /usr/local
+
+git clone https://git.xx4h.de/xx4h/letsencrypt-dns-01
+
+cd letsencrypt-dns-01
+
+# Copy example config (e.g. for ispconfig plugin)
+cp plugins/ispconfig/config.ini{.example,}
+
+# Adapt config with your favorite editor (e.g. for ispconfig plugin)
+vim plugins/ispconfig/config.ini
+```
+
+Usage
+-----
+
+```
+# To get an certificate for the first time (e.g. for ispconfig plugin)
+
+/usr/local/letsencrypt-dns-01/ispconfig www.example.org
+
+# To renew a certificate the corresponding plugin should have matching -renew command (e.g. for ispconfig plugin
+/usr/local/letsencrypt-dns-01/ispconfig-renew www.example.org
+```
