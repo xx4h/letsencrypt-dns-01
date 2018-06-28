@@ -33,9 +33,10 @@ if [ "$DOMAIN" = "" ]; then
     exit 0
 fi
 
-if [ "$SERVICES" != "" ]; then
+if [ "$SERVICES" != "" ] && [ -x "$PLUGIN_DEPLOY_PATH" ]; then
 	export DEPLOY_SERVICES="$SERVICES"
+	DEPLOY_HOOK="--deploy-hook $PLUGIN_DEPLOY_PATH"
 fi
 
 
-certbot renew -n --cert-name $DOMAIN --manual --preferred-challenges=dns --manual-auth-hook $PLUGIN_AUTH_PATH --manual-cleanup-hook $PLUGIN_CLEANUP_PATH --deploy-hook $PLUGIN_DEPLOY_PATH
+echo certbot renew -n --cert-name $DOMAIN --manual --preferred-challenges=dns --manual-auth-hook $PLUGIN_AUTH_PATH --manual-cleanup-hook $PLUGIN_CLEANUP_PATH $DEPLOY_HOOK
