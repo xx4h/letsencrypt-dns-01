@@ -1,0 +1,30 @@
+#!/bin/bash
+
+PLUGIN="$(basename ${0/-renew})"
+DOMAIN="$1"
+
+if [ "$PLUGIN" = "renewcert" ]; then
+    echo "You cannot use 'renewcert' directly, use one of the supported plugins"
+    exit 0
+elif [ ! -d "plugins/$PLUGIN" ]; then
+    echo "There is no Plugin '$PLUGIN'"
+    exit 0
+fi
+
+if [ ! -f "plugins/$PLUGIN/auth" ]; then
+    echo "The auth script for Plugin '$PLUGIN' is missing"
+    exit 0
+fi
+
+if [ ! -f "plugins/$PLUGIN/cleanup" ]; then
+    echo "The cleanup script for Plugin '$PLUGIN' is missing"
+    exit 0
+fi
+
+if [ "$DOMAIN" = "" ]; then
+    echo "Usage: $PLUGIN DOMAIN"
+    exit 0
+fi
+
+
+certbot renew -n --cert-name $DOMAIN --manual --preferred-challenges=dns --manual-auth-hook plugins/$PLUGIN/auth --manual-cleanup-hook plugins/$PLUGIN/cleanup
