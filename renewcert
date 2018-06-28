@@ -11,7 +11,7 @@ PLUGIN_CLEANUP_PATH="$SCRIPTPATH/plugins/$PLUGIN/cleanup"
 if [ "$PLUGIN" = "renewcert" ]; then
     echo "You cannot use 'renewcert' directly, use one of the supported plugins"
     exit 0
-elif [ ! -d "$PLUGIN_PATH=" ]; then
+elif [ ! -d "$PLUGIN_PATH" ]; then
     echo "There is no Plugin '$PLUGIN'"
     exit 0
 fi
