@@ -28,9 +28,17 @@ if [ ! -f "$PLUGIN_CLEANUP_PATH" ]; then
 fi
 
 if [ "$DOMAIN" = "" ]; then
+    echo "Please specify a Domain"
     echo "Usage: $PLUGIN DOMAIN EMAIL"
     exit 0
 fi
+
+if [ "$EMAIL" = "" ]; then
+    echo "Please specify an Email"
+    echo "Usage: $PLUGIN DOMAIN EMAIL"
+    exit 0
+fi
+
 
 
 certbot certonly -n --manual-public-ip-logging-ok --agree-tos --email $EMAIL --manual --preferred-challenges=dns --manual-auth-hook $PLUGIN_AUTH_PATH --manual-cleanup-hook $PLUGIN_CLEANUP_PATH -d $DOMAIN
