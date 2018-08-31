@@ -39,4 +39,4 @@ if [ "$SERVICES" != "" ] && [ -x "$PLUGIN_DEPLOY_PATH" ]; then
 fi
 
 
-echo certbot renew -n --cert-name $DOMAIN --manual --preferred-challenges=dns --manual-auth-hook $PLUGIN_AUTH_PATH --manual-cleanup-hook $PLUGIN_CLEANUP_PATH $DEPLOY_HOOK
+certbot renew -n --cert-name $DOMAIN --manual --preferred-challenges=dns --manual-auth-hook $PLUGIN_AUTH_PATH --manual-cleanup-hook $PLUGIN_CLEANUP_PATH $DEPLOY_HOOK

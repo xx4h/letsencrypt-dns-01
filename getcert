@@ -3,6 +3,7 @@
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 PLUGIN="$(basename $0)"
 DOMAIN="$1"
+EMAIL="$2"
 
 PLUGIN_PATH="$SCRIPTPATH/plugins/$PLUGIN"
 PLUGIN_AUTH_PATH="$SCRIPTPATH/plugins/$PLUGIN/auth"
@@ -27,9 +28,9 @@ if [ ! -f "$PLUGIN_CLEANUP_PATH" ]; then
 fi
 
 if [ "$DOMAIN" = "" ]; then
-    echo "Usage: $PLUGIN DOMAIN"
+    echo "Usage: $PLUGIN DOMAIN EMAIL"
     exit 0
 fi
 
 
-certbot certonly -n --manual-public-ip-logging-ok --manual --preferred-challenges=dns --manual-auth-hook $PLUGIN_AUTH_PATH --manual-cleanup-hook $PLUGIN_CLEANUP_PATH -d $DOMAIN
+certbot certonly -n --manual-public-ip-logging-ok --agree-tos --email $EMAIL --manual --preferred-challenges=dns --manual-auth-hook $PLUGIN_AUTH_PATH --manual-cleanup-hook $PLUGIN_CLEANUP_PATH -d $DOMAIN

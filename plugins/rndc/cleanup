@@ -1,0 +1,19 @@
+#!/bin/bash
+PLUGIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+if [ ! -f $PLUGIN_DIR/config ]; then
+    echo "No config file detected. Aborting."
+    exit 1
+fi
+
+. $PLUGIN_DIR/config
+
+CURRENT_DOMAIN="$(echo $CERTBOT_DOMAIN | perl -lne 'print $1 if (m(([^.]+\.[^.]+$)))')"
+
+nsupdate -v -y $RNDC_KEY:$RNDC_SECRET << EOF
+server $RNDC_HOST
+zone $CURRENT_DOMAIN
+update delete _acme-challenge.$CERTBOT_DOMAIN
+show
+send
+EOF
